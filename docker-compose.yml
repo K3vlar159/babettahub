@@ -1,0 +1,10 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: babettahub-db
+    environment:
+      POSTGRES_DB: babettahub
+      POSTGRES_USER: babetta
+      POSTGRES_PASSWORD: babetta123
+    ports:
+      - "5432:5432"
