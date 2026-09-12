@@ -12,7 +12,7 @@ public class ListingImage {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    private long id;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "listing_id", nullable = false)
