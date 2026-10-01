@@ -30,8 +30,11 @@ public class Listing {
     @Column
     private Integer price;
 
-    @Column(nullable = false)
-    private String contactInfo;
+    @Column
+    private String contactNumber;
+
+    @Column
+    private String contactEmail;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

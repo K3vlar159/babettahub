@@ -9,6 +9,5 @@ public interface ForumThreadRepository extends JpaRepository<ForumThread, Long> 
 
     List<ForumThread> findByAuthor(User author);
     List<ForumThread> findByCategory(ForumCategory category);
-
-    //findByLocked ? findByPinned? findByTitle?
+    List<ForumThread> findByPinnedTrue();
 }
