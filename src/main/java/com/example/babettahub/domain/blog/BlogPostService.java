@@ -33,7 +33,7 @@ public class BlogPostService {
     }
 
     @Transactional(readOnly = true)
-    public List<BlogPostResponse> getAllActive() {
+    public List<BlogPostResponse> getAllPublished() {
         return blogPostRepository.findByStatus(BlogStatus.PUBLISHED).stream().map(BlogPostService::mapToResponse).toList();
     }
 
