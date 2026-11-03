@@ -89,6 +89,37 @@ class ListingServiceTest {
         verify(listingRepository, times(1)).save(listing);
     }
 
+    @Test
+    void update_validRequest_updatesFieldsButKeepsOwnerAndStatus(){
+        Listing listing = createTestListing();
+        ListingRequest request = new ListingRequest(
+                "Motor 207",
+                "Po GO",
+                120,
+                "123",
+                "predaj@test.com",
+                5L
+        );
+
+        when(listingRepository.findById(1L)).thenReturn(Optional.of(listing));
+        when(listingRepository.save(any())).thenReturn(listing);
+
+        ListingResponse response = listingService.update(1L, request);
+
+        assertAll(
+                () -> assertEquals("Motor 207",response.title()),
+                () -> assertEquals("Po GO", response.description()),
+                () -> assertEquals(120, response.price()),
+                () -> assertEquals(ListingStatus.ACTIVE, response.status()),
+                () -> assertEquals(7L, response.sellerId()),
+                () -> assertEquals("123", response.contactNumber()),
+                () -> assertEquals("predaj@test.com", response.contactEmail())
+        );
+
+        verify(listingRepository, times(1)).save(listing);
+
+    }
+
     private static @NonNull Listing createTestListing() {
         User user = new User();
         user.setId(7L);
