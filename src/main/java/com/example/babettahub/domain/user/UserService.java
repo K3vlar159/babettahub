@@ -1,12 +1,18 @@
 package com.example.babettahub.domain.user;
 
 import com.example.babettahub.common.ConflictException;
+import com.example.babettahub.common.InvalidCredentialsException;
+import com.example.babettahub.domain.user.dto.LoginRequest;
+import com.example.babettahub.domain.user.dto.LoginResponse;
 import com.example.babettahub.domain.user.dto.RegisterRequest;
 import com.example.babettahub.domain.user.dto.UserResponse;
+import com.example.babettahub.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -14,6 +20,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
     public UserResponse register(RegisterRequest request) {
 
@@ -42,5 +49,18 @@ public class UserService {
                 saved.getBio(),
                 saved.getCreatedAt()
         );
+    }
+
+    public LoginResponse login(LoginRequest request) {
+
+        User user = userRepository.findByUsername(request.username())
+                .orElseThrow(() -> new InvalidCredentialsException("Nesprávne meno alebo heslo"));
+
+        if (!passwordEncoder.matches(request.password(), user.getPasswordHash())) {
+            throw new InvalidCredentialsException("Nesprávne meno alebo heslo");
+        }
+
+        return new LoginResponse(jwtService.generateToken(user.getUsername()));
+
     }
 }
