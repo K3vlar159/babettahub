@@ -1,5 +1,6 @@
 package com.example.babettahub.domain.user;
 
+import com.example.babettahub.common.ConflictException;
 import com.example.babettahub.domain.user.dto.RegisterRequest;
 import com.example.babettahub.domain.user.dto.UserResponse;
 import lombok.RequiredArgsConstructor;
@@ -17,11 +18,11 @@ public class UserService {
     public UserResponse register(RegisterRequest request) {
 
         if (userRepository.existsByEmail(request.email())) {
-            throw new IllegalArgumentException("Email je už obsadený");
+            throw new ConflictException("Email je už obsadený");
         }
 
         if (userRepository.existsByUsername(request.username())) {
-            throw new IllegalArgumentException("Username je už obsadený");
+            throw new ConflictException("Username je už obsadený");
         }
 
         User user = new User();
