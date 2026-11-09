@@ -3,11 +3,14 @@ package com.example.babettahub.domain.listing;
 import com.example.babettahub.common.ResourceNotFoundException;
 import com.example.babettahub.config.SecurityConfig;
 import com.example.babettahub.domain.listing.dto.ListingResponse;
+import com.example.babettahub.domain.user.UserRepository;
+import com.example.babettahub.security.JwtService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -29,6 +32,12 @@ class ListingControllerTest {
 
     @MockitoBean
     private ListingService listingService;
+
+    @MockitoBean
+    private JwtService jwtService;
+
+    @MockitoBean
+    private UserRepository userRepository;
 
     @Test
     void getById_existingId_returns200() throws Exception {
@@ -54,6 +63,7 @@ class ListingControllerTest {
     }
 
     @Test
+    @WithMockUser
     void post_emptyTitle_returns400() throws Exception{
         String body = """
         {
