@@ -7,6 +7,7 @@ import com.example.babettahub.domain.user.User;
 import com.example.babettahub.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,8 +40,7 @@ public class BlogPostService {
 
     @Transactional
     public BlogPostResponse create(BlogPostRequest request) {
-
-        User author = userRepository.findById(request.authorId())
+        User author = userRepository.findByUsername(getCurrentUsername())
                 .orElseThrow(() -> new ResourceNotFoundException("User neexistuje"));
 
         Set<Tag> tags = resolveTags(request.tagIds());
@@ -98,6 +98,10 @@ public class BlogPostService {
                 post.getContent(),
                 post.getCreatedAt()
         );
+    }
+
+    private String getCurrentUsername() {
+        return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 
 }

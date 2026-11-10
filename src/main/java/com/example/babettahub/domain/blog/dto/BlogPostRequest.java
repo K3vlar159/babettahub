@@ -14,9 +14,6 @@ public record BlogPostRequest(
         @Size( max = 10000, message = "Obsah musí mať max. 10000 znakov")
         String content,
 
-        Set<Long> tagIds,
-
-        @NotNull
-        Long authorId
+        Set<Long> tagIds
 
 ) {}
