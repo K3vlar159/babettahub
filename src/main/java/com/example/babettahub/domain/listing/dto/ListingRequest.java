@@ -17,9 +17,6 @@ public record ListingRequest(
         String contactNumber,
 
         @Email(message = "Email nie je platný")
-        String contactEmail,
-
-        @NotNull
-        Long userId
+        String contactEmail
 
 ) {}

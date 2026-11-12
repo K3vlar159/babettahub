@@ -6,13 +6,18 @@ import com.example.babettahub.domain.listing.dto.ListingResponse;
 import com.example.babettahub.domain.user.User;
 import com.example.babettahub.domain.user.UserRepository;
 import org.jspecify.annotations.NonNull;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -29,6 +34,17 @@ class ListingServiceTest {
 
     @InjectMocks
     private ListingService listingService;
+
+    @BeforeEach
+    void setUp() {
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken("babettar", null, List.of()));
+    }
+
+    @AfterEach
+    void tearDown() {
+        SecurityContextHolder.clearContext();
+    }
 
     private static final LocalDateTime CREATED_AT = LocalDateTime.of(2026, 11, 2, 10, 0);
 
@@ -47,8 +63,7 @@ class ListingServiceTest {
                 "Pekný stav",
                 500,
                 null,
-                null,
-                1L
+                null
         );
         assertThrows(IllegalArgumentException.class,() -> listingService.create(request));
         verify(listingRepository, never()).save(any());
@@ -97,8 +112,7 @@ class ListingServiceTest {
                 "Po GO",
                 120,
                 "123",
-                "predaj@test.com",
-                5L
+                "predaj@test.com"
         );
 
         when(listingRepository.findById(1L)).thenReturn(Optional.of(listing));

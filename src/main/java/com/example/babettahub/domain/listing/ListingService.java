@@ -1,5 +1,6 @@
 package com.example.babettahub.domain.listing;
 
+import com.example.babettahub.common.ForbiddenException;
 import com.example.babettahub.common.ResourceNotFoundException;
 import com.example.babettahub.domain.listing.dto.ListingRequest;
 import com.example.babettahub.domain.listing.dto.ListingResponse;
@@ -7,6 +8,7 @@ import com.example.babettahub.domain.user.User;
 import com.example.babettahub.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -26,7 +28,7 @@ public class ListingService {
             throw new IllegalArgumentException("Musíš zadať aspoň email alebo telefónne číslo");
         }
 
-        User user = userRepository.findById(request.userId())
+        User user = userRepository.findByUsername(getCurrentUsername())
                 .orElseThrow(() -> new ResourceNotFoundException("User neexistuje"));
 
         Listing listing = new Listing();
@@ -63,6 +65,8 @@ public class ListingService {
     public ListingResponse update(Long id, ListingRequest request){
         Listing listing = listingRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Inzerát s týmto ID neexistuje"));
 
+        checkOwner(listing);
+
         if(request.contactEmail() == null && request.contactNumber() == null){
             throw new IllegalArgumentException("Musíš zadať aspoň email alebo telefónne číslo");
         }
@@ -82,6 +86,8 @@ public class ListingService {
 
     public ListingResponse archive(Long id){
         Listing listing = listingRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Inzerát s týmto ID neexistuje"));
+
+        checkOwner(listing);
 
         listing.setStatus(ListingStatus.ARCHIVED);
 
@@ -106,4 +112,13 @@ public class ListingService {
         );
     }
 
+    private String getCurrentUsername() {
+        return SecurityContextHolder.getContext().getAuthentication().getName();
+    }
+
+    private void checkOwner(Listing listing) {
+        if (!listing.getUser().getUsername().equals(getCurrentUsername())) {
+            throw new ForbiddenException("Môžeš upravovať len svoje inzeráty");
+        }
+    }
 }
